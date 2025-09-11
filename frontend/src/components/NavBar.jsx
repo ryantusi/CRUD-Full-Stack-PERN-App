@@ -9,9 +9,9 @@ export default function Navbar() {
             </div>
             <div className="flex gap-2">
                 <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />
-                <button className="btn btn-active btn-accent" onClick={()=>document.getElementById('modal-app').showModal()}>Add</button>
+                <button className="btn btn-active btn-accent" onClick={()=>document.getElementById('modal-add').showModal()}>Add</button>
                 <Modal 
-                    id="modal-app" 
+                    id="add" 
                     Heading="Add New Member"
                     Type="Add"
                 />
