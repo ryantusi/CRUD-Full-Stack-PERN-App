@@ -1,13 +1,41 @@
+import { useState, useEffect } from "react";
 import Modal from "./Modal";
+import { fetchData, deleteMember } from "../utils/index";
 
 export default function Table() {
-    const clients = [
-        { id: 1, name: "Cy Ganderton", job: "Quality Control Specialist", isActive: true },
-        { id: 2, name: "Hart Hagerty", job: "Desktop Support Technician", isActive: false },
-        { id: 3, name: "Brice Swyre", job: "Tax Accountant", isActive: true },
-        { id: 4, name: "Ryan Tusi", job: "Bakchodi", isActive: false },
-        { id: 5, name: "Ahmed Boi", job: "Gaan Masti", isActive: true },
-    ];
+    // Sample Data:
+    // const clients = [
+    //     { id: 1, name: "Cy Ganderton", job: "Quality Control Specialist", status: true },
+    //     { id: 2, name: "Hart Hagerty", job: "Desktop Support Technician", status: false },
+    //     { id: 3, name: "Brice Swyre", job: "Tax Accountant", status: true },
+    //     { id: 4, name: "Ryan Tusi", job: "Bakchodi", status: false },
+    //     { id: 5, name: "Ahmed Boi", job: "Gaan Masti", status: true },
+    // ];
+
+    const [clients, setClients] = useState([]);
+    const fetchClients = async() => {
+        try {
+            const res = await fetchData();
+            setClients(res);
+        } catch (error) {
+            console.error("Error: ", error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchClients();
+    }, []);
+
+    const handleDelete = async(id) => {
+        try {
+            const res = await deleteMember(id);
+            if(!res.error) {
+                fetchClients();
+            }
+        } catch (error) {
+            console.error("Error: ", error.message);
+        }
+    }
 
     return ( 
         <>
@@ -26,21 +54,35 @@ export default function Table() {
                 {
                     clients.map((client) => {
                         return (
-                            <tr>
+                            <tr key={client.id}>
                                 <th>{client.id}</th>
                                 <td>{client.name}</td>
                                 <td>{client.job}</td>
-                                <td><button className={`btn rounded-full btn-primary ${client.isActive ? `btn-active` : `btn-outline`}`}>{client.isActive ? "Active" : "Inactive"}</button></td>
-                                <td><button className="btn btn-soft btn-info" onClick={()=>document.getElementById(`modal-update-${client.id}`).showModal()}>Update</button></td>
-                                <Modal 
-                                   id={`modal-update-${client.id}`} 
-                                   Heading={`Update Member ${client.id}`} 
-                                   Type="Update"
-                                   Name={client.name}
-                                   Job={client.job}
-                                   Status={client.isActive}
-                                />
-                                <td><button className="btn btn-soft btn-error">Delete</button></td>
+                                <td><button className={`btn rounded-full btn-primary ${client.status ? `btn-active` : `btn-outline`}`}>
+                                        {client.status ? "Active" : "Inactive"}
+                                    </button>
+                                </td>
+                                <td><button 
+                                        className="btn btn-soft btn-info"
+                                        onClick={()=>document.getElementById(`modal-${client.id}`).showModal()}
+                                    >Update</button>
+                                    <Modal 
+                                        id={client.id} 
+                                        Heading={`Update Member ${client.id}`} 
+                                        Type="Update"
+                                        Name={client.name}
+                                        Job={client.job}
+                                        Status={client.status}
+                                    />
+                                </td>
+                                <td><button 
+                                        className="btn btn-soft btn-error" 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleDelete(client.id);
+                                        }}
+                                    >Delete</button>
+                                </td>
                             </tr>
                         )
                     })
