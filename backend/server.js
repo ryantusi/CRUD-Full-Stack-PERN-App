@@ -8,9 +8,10 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 //CORS Configuration
+const allowedOrigin = process.env.FRONTEND_URL || "*";
 app.use(cors());
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: allowedOrigin, 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
